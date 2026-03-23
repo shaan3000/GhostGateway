@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+
+  # Modbus TCP Simulator (Clinical IoT Gateway)
+  modbus-server:
+    image: oitc/modbus-server:latest
+    container_name: ghostgateway_modbus
+    ports:
+      - "502:502"
+    environment:
+      - MODBUS_PORT=502
+    networks:
+      - clinical_lab
+    restart: unless-stopped
+
+  # MQTT Broker (Mosquitto - unauthenticated for lab)
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0
+    container_name: ghostgateway_mqtt
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - clinical_lab
+    restart: unless-stopped
+
+  # Clinical IoT Gateway Simulator (publishes fake vitals)
+  clinical-gateway:
+    image: python:3.11-slim
+    container_name: ghostgateway_clinical
+    depends_on:
+      - modbus-server
+      - mqtt-broker
+    volumes:
+      - ./clinical_simulator.py:/app/clinical_simulator.py
+    working_dir: /app
+    command: >
+      sh -c "pip install paho-mqtt pymodbus --quiet &&
+             python clinical_simulator.py"
+    networks:
+      - clinical_lab
+    restart: unless-stopped
+
+networks:
+  clinical_lab:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.100.0/24

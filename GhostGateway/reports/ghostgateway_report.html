@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>GhostGateway Report</title>
+<style>
+  body { background:#0d0d0d; color:#e0e0e0; font-family:'Courier New',monospace; padding:30px; }
+  h1 { color:#00ff88; letter-spacing:3px; }
+  h2 { color:#00bcd4; border-bottom:1px solid #333; padding-bottom:8px; }
+  table { width:100%; border-collapse:collapse; margin-top:20px; }
+  th { background:#1a1a2e; color:#00ff88; padding:10px; text-align:left; }
+  td { padding:10px; border-bottom:1px solid #222; }
+  tr:hover { background:#1a1a1a; }
+  .badge { padding:4px 10px; border-radius:4px; font-size:12px; font-weight:bold; }
+  .footer { margin-top:40px; color:#555; font-size:12px; }
+  .warning { color:#ff4c4c; background:#1a0000; padding:10px; border-left:4px solid #ff4c4c; margin-bottom:20px; }
+</style>
+</head>
+<body>
+<h1>&#128123; GhostGateway</h1>
+<h2>Clinical IoT Gateway Attack Report</h2>
+<div class="warning">
+  &#9888; This report contains sensitive security findings. Handle with care. For authorized use only.
+</div>
+<p><strong>Generated:</strong> 2026-03-23 16:05:08</p>
+<table>
+  <thead>
+    <tr>
+      <th>Protocol</th>
+      <th>Module</th>
+      <th>Check</th>
+      <th>Severity</th>
+      <th>Detail</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+                        <tr>
+                            <td>Modbus</td>
+                            <td>modbus_recon</td>
+                            <td>Connectivity</td>
+                            <td style="color:#4fc3f7; font-weight:bold;">INFO</td>
+                            <td>Device reachable at 127.0.0.1:502</td>
+                        </tr>
+                        <tr>
+                            <td>Modbus</td>
+                            <td>modbus_recon</td>
+                            <td>Coil Read (FC01)</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Unauthenticated coil read allowed</td>
+                        </tr>
+                        <tr>
+                            <td>Modbus</td>
+                            <td>modbus_recon</td>
+                            <td>Holding Register Read (FC03)</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Clinical parameters exposed</td>
+                        </tr>
+                        <tr>
+                            <td>Modbus</td>
+                            <td>modbus_injection</td>
+                            <td>FC06 Write Register 5</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Infusion Pump Rate set to 9999</td>
+                        </tr>
+                        <tr>
+                            <td>Modbus</td>
+                            <td>modbus_injection</td>
+                            <td>FC05 Write Coil 7</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Emergency Override Flag set to ON</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_recon</td>
+                            <td>Anonymous Access</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Broker allows unauthenticated connections</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_recon</td>
+                            <td>Topic Enumeration</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>ward/icu/patient_001/monitor discovered</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>ICU Alarm Silence Injection</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Alarm suppression injected successfully</td>
+                        </tr>
+  </tbody>
+</table>
+<div class="footer">
+  GhostGateway v1.0.0 | Clinical IoT Gateway Attack Simulator | For Authorized Testing Only
+</div>
+</body>
+</html>
