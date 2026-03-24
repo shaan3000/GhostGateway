@@ -22,7 +22,7 @@
 <div class="warning">
   &#9888; This report contains sensitive security findings. Handle with care. For authorized use only.
 </div>
-<p><strong>Generated:</strong> 2026-03-23 16:05:08</p>
+<p><strong>Generated:</strong> 2026-03-24 00:10:52</p>
 <table>
   <thead>
     <tr>
@@ -40,56 +40,329 @@
                             <td>modbus_recon</td>
                             <td>Connectivity</td>
                             <td style="color:#4fc3f7; font-weight:bold;">INFO</td>
-                            <td>Device reachable at 127.0.0.1:502</td>
+                            <td>Modbus TCP device not reachable at 127.0.0.1:502</td>
                         </tr>
                         <tr>
                             <td>Modbus</td>
-                            <td>modbus_recon</td>
-                            <td>Coil Read (FC01)</td>
+                            <td>modbus_dos</td>
+                            <td>Connection Flood</td>
                             <td style="color:#ff8800; font-weight:bold;">HIGH</td>
-                            <td>Unauthenticated coil read allowed</td>
+                            <td>~2606 connection attempts in 3s against 127.0.0.1:502</td>
                         </tr>
                         <tr>
                             <td>Modbus</td>
-                            <td>modbus_recon</td>
-                            <td>Holding Register Read (FC03)</td>
-                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
-                            <td>Clinical parameters exposed</td>
+                            <td>modbus_dos</td>
+                            <td>Request Flood</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>~35238 rapid requests in 3s against 127.0.0.1:502</td>
                         </tr>
                         <tr>
                             <td>Modbus</td>
-                            <td>modbus_injection</td>
-                            <td>FC06 Write Register 5</td>
-                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
-                            <td>Infusion Pump Rate set to 9999</td>
-                        </tr>
-                        <tr>
-                            <td>Modbus</td>
-                            <td>modbus_injection</td>
-                            <td>FC05 Write Coil 7</td>
-                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
-                            <td>Emergency Override Flag set to ON</td>
+                            <td>modbus_dos</td>
+                            <td>Malformed Frame Attack</td>
+                            <td style="color:#ffd700; font-weight:bold;">MEDIUM</td>
+                            <td>~9 malformed Modbus frames sent. Tests exception handling robustness.</td>
                         </tr>
                         <tr>
                             <td>MQTT</td>
                             <td>mqtt_recon</td>
                             <td>Anonymous Access</td>
                             <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
-                            <td>Broker allows unauthenticated connections</td>
+                            <td>MQTT broker at 127.0.0.1:1883 allows unauthenticated connections.</td>
                         </tr>
                         <tr>
                             <td>MQTT</td>
                             <td>mqtt_recon</td>
-                            <td>Topic Enumeration</td>
+                            <td>Topic Enumeration (# Wildcard)</td>
                             <td style="color:#ff8800; font-weight:bold;">HIGH</td>
-                            <td>ward/icu/patient_001/monitor discovered</td>
+                            <td>Topics discovered via unauthenticated wildcard: ['ward/icu/patient_001/monitor', 'ward/icu/patient_003/monitor', 'alarm/global/suppress', 'vitals/patient_002', 'ward/icu/device/command', 'vitals/patient_003', 'gateway/auth/bypass', 'ward/icu/patient_002/monitor', 'vitals/patient_001']</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_recon</td>
+                            <td>Sensitive Topic Access</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Accessible clinical topics: [{'pattern': 'ward/#', 'topics': ['ward/icu/device/command', 'ward/icu/patient_001/monitor', 'ward/icu/patient_002/monitor', 'ward/icu/patient_003/monitor']}, {'pattern': 'vitals/#', 'topics': ['vitals/patient_001', 'vitals/patient_002', 'vitals/patient_003']}, {'pattern': 'alarm/#', 'topics': ['alarm/global/suppress']}, {'pattern': 'gateway/#', 'topics': ['gateway/auth/bypass']}]</td>
                         </tr>
                         <tr>
                             <td>MQTT</td>
                             <td>mqtt_injection</td>
                             <td>ICU Alarm Silence Injection</td>
                             <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
-                            <td>Alarm suppression injected successfully</td>
+                            <td>Unauthorized publish to [ward/icu/device/command]. Payload: {"command": "ALARM_SILENCE", "duration": 99999}</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Patient Monitor Threshold Manipulation</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Unauthorized publish to [patient/monitor/threshold]. Payload: {"heartrate_max": 9999, "spo2_min": 0}</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Infusion Pump Rate Override</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Unauthorized publish to [device/infusion/pump/rate]. Payload: {"rate_ml_hr": 9999, "override": true}</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Gateway Config Injection</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Unauthorized publish to [gateway/config/update]. Payload: {"firmware": "ghostgateway_v1", "auth": false}</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Fake Vitals Data Injection (Zero values)</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Unauthorized publish to [sensor/vitals/update]. Payload: {"heartrate": 0, "bp_systolic": 0, "spo2": 0}</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Global Alarm Suppression</td>
+                            <td style="color:#ff4c4c; font-weight:bold;">CRITICAL</td>
+                            <td>Unauthorized publish to [alarm/suppress]. Payload: {"suppress_all": true, "code": "GHOSTGATEWAY"}</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Retained Message Injection: ward/icu/device/command</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Retained message injected on [ward/icu/device/command]. Will persist until broker restart.</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Retained Message Injection: alarm/global/suppress</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Retained message injected on [alarm/global/suppress]. Will persist until broker restart.</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Retained Message Injection: gateway/auth/bypass</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Retained message injected on [gateway/auth/bypass]. Will persist until broker restart.</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Topic Traversal: ../../../gateway/admin/command</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Published to traversal topic [../../../gateway/admin/command]</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Topic Traversal: ward/icu/../../admin/override</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Published to traversal topic [ward/icu/../../admin/override]</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_injection</td>
+                            <td>Topic Traversal: $SYS/broker/clients/connected</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Published to traversal topic [$SYS/broker/clients/connected]</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/device/command</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/device/command]. Payload: b'{"command": "DISABLE_MONITOR"}'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: alarm/global/suppress</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [alarm/global/suppress]. Payload: b'{"suppressed": true}'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: gateway/auth/bypass</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [gateway/auth/bypass]. Payload: b'{"auth_required": false}'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: vitals/patient_001</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [vitals/patient_001]. Payload: b'{"patient_id": "patient_001", "heartrate": 109, "spo2": 94, "bp_systolic": 131, "bp_diastolic": 80, '</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/patient_001/monitor</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/patient_001/monitor]. Payload: b'{"patient_id": "patient_001", "heartrate": 109, "spo2": 94, "bp_systolic": 131, "bp_diastolic": 80, '</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: vitals/patient_002</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [vitals/patient_002]. Payload: b'{"patient_id": "patient_002", "heartrate": 82, "spo2": 92, "bp_systolic": 92, "bp_diastolic": 75, "a'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/patient_002/monitor</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/patient_002/monitor]. Payload: b'{"patient_id": "patient_002", "heartrate": 82, "spo2": 92, "bp_systolic": 92, "bp_diastolic": 75, "a'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: vitals/patient_003</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [vitals/patient_003]. Payload: b'{"patient_id": "patient_003", "heartrate": 61, "spo2": 96, "bp_systolic": 105, "bp_diastolic": 85, "'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/patient_003/monitor</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/patient_003/monitor]. Payload: b'{"patient_id": "patient_003", "heartrate": 61, "spo2": 96, "bp_systolic": 105, "bp_diastolic": 85, "'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: vitals/patient_001</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [vitals/patient_001]. Payload: b'{"patient_id": "patient_001", "heartrate": 110, "spo2": 95, "bp_systolic": 131, "bp_diastolic": 80, '</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/patient_001/monitor</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/patient_001/monitor]. Payload: b'{"patient_id": "patient_001", "heartrate": 110, "spo2": 95, "bp_systolic": 131, "bp_diastolic": 80, '</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: vitals/patient_002</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [vitals/patient_002]. Payload: b'{"patient_id": "patient_002", "heartrate": 81, "spo2": 92, "bp_systolic": 89, "bp_diastolic": 75, "a'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/patient_002/monitor</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/patient_002/monitor]. Payload: b'{"patient_id": "patient_002", "heartrate": 81, "spo2": 92, "bp_systolic": 89, "bp_diastolic": 75, "a'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: vitals/patient_003</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [vitals/patient_003]. Payload: b'{"patient_id": "patient_003", "heartrate": 59, "spo2": 96, "bp_systolic": 106, "bp_diastolic": 85, "'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/patient_003/monitor</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/patient_003/monitor]. Payload: b'{"patient_id": "patient_003", "heartrate": 59, "spo2": 96, "bp_systolic": 106, "bp_diastolic": 85, "'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: vitals/patient_001</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [vitals/patient_001]. Payload: b'{"patient_id": "patient_001", "heartrate": 111, "spo2": 95, "bp_systolic": 133, "bp_diastolic": 80, '</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/patient_001/monitor</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/patient_001/monitor]. Payload: b'{"patient_id": "patient_001", "heartrate": 111, "spo2": 95, "bp_systolic": 133, "bp_diastolic": 80, '</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: vitals/patient_002</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [vitals/patient_002]. Payload: b'{"patient_id": "patient_002", "heartrate": 83, "spo2": 91, "bp_systolic": 88, "bp_diastolic": 75, "a'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/patient_002/monitor</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/patient_002/monitor]. Payload: b'{"patient_id": "patient_002", "heartrate": 83, "spo2": 91, "bp_systolic": 88, "bp_diastolic": 75, "a'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: vitals/patient_003</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [vitals/patient_003]. Payload: b'{"patient_id": "patient_003", "heartrate": 61, "spo2": 96, "bp_systolic": 104, "bp_diastolic": 85, "'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/patient_003/monitor</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/patient_003/monitor]. Payload: b'{"patient_id": "patient_003", "heartrate": 61, "spo2": 96, "bp_systolic": 104, "bp_diastolic": 85, "'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: ward/icu/device/command</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [ward/icu/device/command]. Payload: b'{"command":"ALARM_SILENCE","duration":99999}'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: patient/monitor/threshold</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [patient/monitor/threshold]. Payload: b'{"heartrate_max":9999,"spo2_min":0}'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_replay</td>
+                            <td>MQTT Replay: device/infusion/pump/rate</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>Message replayed on [device/infusion/pump/rate]. Payload: b'{"rate_ml_hr":9999,"override":true}'</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_dos</td>
+                            <td>MQTT Connection Flood</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>~339 concurrent MQTT connections attempted in 3s</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_dos</td>
+                            <td>MQTT Message Flood</td>
+                            <td style="color:#ff8800; font-weight:bold;">HIGH</td>
+                            <td>~39745 rapid messages flooded broker in 3s</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_dos</td>
+                            <td>Large Payload Flood</td>
+                            <td style="color:#ffd700; font-weight:bold;">MEDIUM</td>
+                            <td>~29 oversized (64KB) MQTT messages sent in 3s</td>
+                        </tr>
+                        <tr>
+                            <td>MQTT</td>
+                            <td>mqtt_dos</td>
+                            <td>Retained Message Abuse</td>
+                            <td style="color:#ffd700; font-weight:bold;">MEDIUM</td>
+                            <td>100 retained messages published to fill broker storage</td>
                         </tr>
   </tbody>
 </table>

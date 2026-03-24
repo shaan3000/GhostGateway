@@ -7,7 +7,7 @@ services:
     image: oitc/modbus-server:latest
     container_name: ghostgateway_modbus
     ports:
-      - "502:502"
+      - "502:5020"
     environment:
       - MODBUS_PORT=502
     networks:
